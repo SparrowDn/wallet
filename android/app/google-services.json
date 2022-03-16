@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "900543700348",
+    "project_id": "secondw-5329d",
+    "storage_bucket": "secondw-5329d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900543700348:android:12fdd682183848e48b18f9",
+        "android_client_info": {
+          "package_name": "com.sparrowdn.wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900543700348-ftvcn4lemprt63r2igje1d99vuatq4gr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sparrowdn.wallet",
+            "certificate_hash": "e8da02c6dd21e9d18556088ec92ee72e067fba83"
+          }
+        },
+        {
+          "client_id": "900543700348-qsot6b5jg9eur1b6ke102gvtb1hu73k0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkcYBAkUOpQb5dEOYC2IY_lcm4maAIOVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900543700348-qsot6b5jg9eur1b6ke102gvtb1hu73k0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
