@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -10,6 +12,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wallet/wallet/userdetails.dart';
 import 'package:wallet/pages/createwallet.dart';
 //import 'package:wallet/pages/login_page.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 
 class MyHomePage extends StatefulWidget {
@@ -36,67 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
   
   
   @override
-  void initState(){
-    super.initState();
-    httpClient = Client();
-    ethClient = Web3Client("https://ropsten.infura.io/v3/0e9b6174a9204bb78853372424d0e113", httpClient);
-    details();
-  }
-
-  details() async{
-    dynamic data = await getUserDetails();
-    data != null ?
-    setState(() {
-      var privAddress = data['privateKey'];
-      var publicAddress = data['publicKey'];
-      var temp = EthPrivateKey.fromHex(privAddress);
-      credentials = temp.address;
-
-      created = data['wallet created'];
-      balance = getBalance(credentials);
-    }):
-    print('data is null');
-  }
-
-  Future<DeployedContract> loadContract() async{
-    String abi = await rootBundle.loadString("assets/abi/abi.json");
-    String contractAddress = '0x26c5F8Ea7667b3648DFd8d336a451026c864c778';
-    final contract = DeployedContract(ContractAbi.fromJson(abi, "SPC"), EthereumAddress.fromHex(contractAddress));
-    return contract;
-  }
-
-  Future<List<dynamic>> query(String functionName, List<dynamic> args) async {
-    final contract = await loadContract();
-    final ethFunction = contract.function(functionName);
-    final result = await ethClient.call(contract: contract, function: ethFunction, params: args);
-    return result;
-  }
-
-  Future<void> getBalance(EthereumAddress credentialAddress) async{
-    List<dynamic> result = await query('balanceOf',[credentialAddress]);
-    var data = result[0];
-    setState(() {
-      balance = data;
-    });
-  }
-
-  Future<String> sendCoin() async {
-    var bigAmount = BigInt.from(myAmount);
-    var response = await submit('transfer', [targetAddress, bigAmount]);
-    return response;
-  }
-
-  Future<String> submit(String functionName, List<dynamic> args) async{
-    DeployedContract contract = await loadContract();
-    final ethFunction = contract.function(functionName);
-    EthPrivateKey key = EthPrivateKey.fromHex(privAddress);
-    Transaction transaction = await Transaction.callContract(contract: contract, function: ethFunction, parameters: args, maxGas: 100000);
-    print(transaction.nonce);
-    final result = await ethClient.sendTransaction(key, transaction, chainId:4);
-    return result;
-  }
-
-
 
   
   Widget build(BuildContext context) {
@@ -124,56 +69,65 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ),),
             Container(
-              margin: const EdgeInsets.all(20),
+              margin: const EdgeInsets.all(10),
               child: Text(
-              u_name,
+              '${u_name} 의 자기소개 페이지',
                 style: const TextStyle(
                   fontSize: 20,
-                  color: Colors.blueAccent,
+                  color: Colors.grey,
                   fontWeight: FontWeight.bold
                 ),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.all(5),
-            alignment: Alignment.center,
-            height: 100,
-            width: MediaQuery.of(context).size.width,
-            child: const Text (
-              "Balance",
-              style: TextStyle(
-                fontSize: 70,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+
           Container(
             margin: const EdgeInsets.all(5),
             alignment: Alignment.center,
             height: 50,
             width: MediaQuery.of(context).size.width,
             child: Text(
-              balance == null?
-                  "0 SPC":
-                  "${balance}",
+              "My Links",
               style: const TextStyle(
-                fontSize: 50,
+                fontSize: 30,
                 color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
           Container(
-            margin: const EdgeInsets.all(20),
-            child: ElevatedButton(
-              onPressed: () async{
-                var response = await sendCoin();
-                print (response);
-              },
-              child: const Text('send money'),
+            margin: const EdgeInsets.all(10),
+            child: ElevatedButton.icon(
+              onPressed: _launchURL,
+              icon: FaIcon(FontAwesomeIcons.youtube),
+              label: Text('Youtube Channel'),
+              //child: const Text('Youtube Channel'),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green)
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red)
+              ),
+            ),
+          ),
+
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: ElevatedButton.icon(
+              onPressed: _launchURL2,
+              icon: FaIcon(FontAwesomeIcons.facebookSquare),
+              label: Text('Facebook Page'),
+              //child: const Text('Facebook Channel'),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blue)
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: ElevatedButton.icon(
+              onPressed: _launchURL3,
+              icon: FaIcon(FontAwesomeIcons.instagramSquare),
+              label: Text('Instagram Page'),
+              //child: const Text('Facebook Channel'),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.purpleAccent)
               ),
             ),
           ),
@@ -181,28 +135,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
           Container(
-            margin: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              onPressed: (){
-                credentials !=null?
-                    getBalance(credentials):
-                    print("credentials null");
-              },
-              child: const Text('refresh page'),
-            ),
-          ),
-          Container(
             margin: const EdgeInsets.only(top:30, right: 30),
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateWallet()));
+                _launchURL4();
               },
               child: const Icon(Icons.add),
             ),
-          )
+          ),
         ],
       ),
     );
+  }
+
+  _launchURL() async{
+    const url = 'https://www.youtube.com/channel/UC2OWFEtrrJVMCS3EUH5kRoQ';
+  launch(url);
+  }
+
+  _launchURL2() async{
+    const url = 'https://www.facebook.com/profile.php?id=100003641890222';
+    launch(url);
+  }
+  _launchURL3() async{
+    const url = 'https://www.instagram.com/sparrowdn/';
+    launch(url);
+  }
+  _launchURL4() async {
+    const url = 'https://www.warcraftlogs.com/character/kr/%EC%95%84%EC%A6%88%EC%83%A4%EB%9D%BC/%ec%8a%a4%ed%8c%a8%eb%a1%9c%ec%82%ac%ec%a0%9c';
+    launch(url);
   }
 }

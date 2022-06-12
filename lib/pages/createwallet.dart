@@ -40,7 +40,7 @@ class _CreateWalletState extends State<CreateWallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('wallet Information'), actions: [
+        appBar: AppBar(title: const Text('링크 추가하기'), actions: [
           IconButton(
             icon: const Icon(Icons.backspace),
             onPressed: () {

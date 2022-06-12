@@ -16,7 +16,7 @@ class Login extends StatelessWidget {
             return const Center(child: CircularProgressIndicator(),);
           }
           else if (snapshot.hasData) {
-            return MyHomePage(title: "wallet");
+            return MyHomePage(title: "자기소개 페이지");
           } else if (snapshot.hasError) {
             return const Center(child: Text('something went wrong!'),);
           } else {
